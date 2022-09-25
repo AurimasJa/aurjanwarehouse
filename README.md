@@ -31,6 +31,8 @@ Vadovas
 
 •	Peržiūrėti darbuotojus
 
+•	Pridėti prekes į pagrindinę zoną
+
 •	Registruoti darbuotojus į savo sandėlį
 
 •	Atsijungti
