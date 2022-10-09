@@ -53,6 +53,6 @@ Administratorius:
 
 Front–End : React.js
 Back-End : .NET
-Duomenų bazė: MySQL
+Duomenų bazė: MSSql
 
 UML deployment diagrama: Vėliau…
