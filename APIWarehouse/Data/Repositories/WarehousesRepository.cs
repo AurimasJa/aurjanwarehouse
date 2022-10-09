@@ -1,7 +1,4 @@
-﻿
-
-
-using APIWarehouse.Data.Models;
+﻿using APIWarehouse.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace APIWarehouse.Data.Repositories
@@ -12,6 +9,7 @@ namespace APIWarehouse.Data.Repositories
         Task DeleteAsync(Warehouse warehouse);
         Task<Warehouse?> GetAsync(int warehouseId);
         Task<IReadOnlyList<Warehouse>> GetManyAsync();
+        Task<IReadOnlyList<Item>> GetManyAsyncItemsFromWarehouse(int warehouseId);
         Task UpdateAsync(Warehouse warehouse);
     }
 
@@ -33,7 +31,10 @@ namespace APIWarehouse.Data.Repositories
         {
             return await _warehouseDbContext.Warehouses.ToListAsync();
         }
-
+        public async Task<IReadOnlyList<Item>> GetManyAsyncItemsFromWarehouse(int warehouseId)
+        {
+            return await _warehouseDbContext.Items.Where(x => x.Zone.Warehouse.Id == warehouseId).ToListAsync();
+        }
         public async Task CreateAsync(Warehouse warehouse)
         {
             _warehouseDbContext.Warehouses.Add(warehouse);

@@ -6,6 +6,8 @@ namespace APIWarehouse.Data
     public class WarehouseDbContext : DbContext
     {
         public DbSet<Warehouse> Warehouses { get; set; }
+        public DbSet<Zone> Zones { get; set; }
+        public DbSet<Item> Items { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
