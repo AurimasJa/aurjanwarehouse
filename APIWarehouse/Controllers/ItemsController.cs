@@ -66,15 +66,25 @@ namespace APIWarehouse.Controllers
                 return NotFound($"Zone {zoneId}id does not exist");
             }
 
-            var item = _mapper.Map<Item>(itemDto);
-            item.ZoneId = zoneId;
+            if (itemDto.Name is not null && itemDto.Name.All(char.IsDigit))
+            {
+                return BadRequest("You need to put valid name/description");
+            }
+            if (itemDto.Description is not null && itemDto.Description.All(char.IsDigit))
+            {
+                return BadRequest("You need to put valid name/description");
+            }
+            else
+            {
+                var item = _mapper.Map<Item>(itemDto);
+                item.ZoneId = zoneId;
 
-            await _itemsRepository.CreateAsync(item);
+                await _itemsRepository.CreateAsync(item);
 
-            return Created($"/api/topics/{warehouseId}/posts/{zoneId}/items/{item.Id}", _mapper.Map<ItemDto>(item));
+                return Created($"/api/topics/{warehouseId}/posts/{zoneId}/items/{item.Id}", _mapper.Map<ItemDto>(item));
 
+            }
         }
-
         [HttpPut("{itemId}")]
         public async Task<ActionResult<ItemDto>> Update(int warehouseId, int zoneId, int itemId, UpdateItemDto itemDto)
         {
@@ -93,15 +103,26 @@ namespace APIWarehouse.Controllers
             {
                 return NotFound($"Item {itemId}id does not exist");
             }
-            //_mapper.Map(itemDto, oldItem);
-            oldItem.Name = itemDto.Name is null ? oldItem.Name : itemDto.Name;
-            oldItem.Description = itemDto.Description is null ? oldItem.Description : itemDto.Description;
-            await _itemsRepository.UpdateAsync(oldItem);
 
-            return Ok(_mapper.Map<ItemDto>(oldItem));
+            if (itemDto.Name is not null && itemDto.Name.All(char.IsDigit))
+            {
+                return BadRequest("You need to put valid name/description");
+            }
+            if (itemDto.Description is not null && itemDto.Description.All(char.IsDigit))
+            {
+                return BadRequest("You need to put valid name/description");
+            }
+            else
+            {
+                //_mapper.Map(itemDto, oldItem);
+                oldItem.Name = itemDto.Name is null ? oldItem.Name : itemDto.Name;
+                oldItem.Description = itemDto.Description is null ? oldItem.Description : itemDto.Description;
+                await _itemsRepository.UpdateAsync(oldItem);
 
+                return Ok(_mapper.Map<ItemDto>(oldItem));
+
+            }
         }
-
         [HttpDelete("{itemId}")]
         public async Task<ActionResult> Remove(int warehouseId, int zoneId, int itemId)
         {

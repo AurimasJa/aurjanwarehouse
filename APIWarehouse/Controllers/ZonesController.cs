@@ -52,14 +52,20 @@ public class ZonesController : ControllerBase
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
         if (warehouse == null) return NotFound($"Couldn't find a warehouse with id of {warehouseId}");
 
-        var zone = _mapper.Map<Zone>(zoneDto);
-        zone.WarehouseId = warehouseId;
+        if (zoneDto.Name is not null && zoneDto.Name.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid name");
+        }
+        else
+        {
+            var zone = _mapper.Map<Zone>(zoneDto);
+            zone.WarehouseId = warehouseId;
 
-        await _zoneRepository.CreateAsync(zone);
+            await _zoneRepository.CreateAsync(zone);
 
-        return Created($"/api/topics/{warehouseId}/posts/{zone.Id}", _mapper.Map<ZoneDto>(zone));
+            return Created($"/api/topics/{warehouseId}/posts/{zone.Id}", _mapper.Map<ZoneDto>(zone));
+        }
     }
-
 
     [HttpPut("{zoneId}")]
     public async Task<ActionResult<ZoneDto>> Update(int warehouseId, int zoneId, UpdateZoneDto zoneDto)
@@ -69,10 +75,17 @@ public class ZonesController : ControllerBase
         var oldZone = await _zoneRepository.GetAsync(warehouseId, zoneId);
         if (oldZone == null)
             return NotFound($"Zone {zoneId}id does not exist");
-        oldZone.Name = zoneDto.Name is null ? oldZone.Name : zoneDto.Name;
-        await _zoneRepository.UpdateAsync(oldZone);
+        if (zoneDto.Name is not null && zoneDto.Name.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid name");
+        }
+        else
+        {
+            oldZone.Name = zoneDto.Name is null ? oldZone.Name : zoneDto.Name;
+            await _zoneRepository.UpdateAsync(oldZone);
 
-        return Ok(_mapper.Map<ZoneDto>(oldZone));
+            return Ok(_mapper.Map<ZoneDto>(oldZone));
+        }
     }
 
     [HttpDelete("{zoneId}")]

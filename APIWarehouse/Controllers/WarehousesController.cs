@@ -40,7 +40,7 @@ public class WarehousesController : ControllerBase
     }
     
     [HttpGet]
-    [Route("{warehouseId}/GetAllItems")]
+    [Route("{warehouseId}/AllItems")]
     public async Task<IEnumerable<ItemDto>> GetAll(int warehouseId)
     {
         var items = await _warehousesRepository.GetManyAsyncItemsFromWarehouse(warehouseId);
@@ -49,21 +49,43 @@ public class WarehousesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<WarehouseDto>> Create(CreateWarehouseDto createWarehouseDto)
     {
-        var war = new Warehouse
-        { Name = createWarehouseDto.Name, Description = createWarehouseDto.Description, Address = createWarehouseDto.Address, CreationDate = DateTime.UtcNow };
 
-        await _warehousesRepository.CreateAsync(war);
+        if (createWarehouseDto.Address is not null && createWarehouseDto.Address.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid name/description/address");
+        }
+        if (createWarehouseDto.Name is not null && createWarehouseDto.Name.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid name/description/address");
+        }
+        if (createWarehouseDto.Description is not null && createWarehouseDto.Description.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid name/description/address");
+        }
+        else
+        {
+            var war = new Warehouse
+            { Name = createWarehouseDto.Name, Description = createWarehouseDto.Description, Address = createWarehouseDto.Address, CreationDate = DateTime.UtcNow };
+
+            await _warehousesRepository.CreateAsync(war);
 
 
-        //return Created("", new { id = war.Id });
-        // 201
-        return Created("", new WarehouseDto(war.Id, war.Name, war.Description, war.Address, DateTime.Now));
+            //return Created("", new { id = war.Id });
+            // 201
+            return Created("", new WarehouseDto(war.Id, war.Name, war.Description, war.Address, DateTime.Now));
+
+        }
+
         //return CreatedAtAction("GetTopic", new { topicId = topic.Id }, new TopicDto(topic.Name, topic.Description, topic.CreationDate));
     }
 
     // api/topics
     [HttpPut]
     [Route("{warehouseId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<WarehouseDto>> Update(int warehouseId, UpdateWarehouseDto updateWarehouseDto)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -72,11 +94,25 @@ public class WarehousesController : ControllerBase
         if (warehouse == null)
             return NotFound($"Couldn't find a warehouse with id of {warehouseId}"); ;
 
-        warehouse.Description = updateWarehouseDto.Description is null ? warehouse.Description : updateWarehouseDto.Description;
-        warehouse.Address = updateWarehouseDto.Address is null ? warehouse.Address : updateWarehouseDto.Address;
-        await _warehousesRepository.UpdateAsync(warehouse);
+        if(updateWarehouseDto.Address is not null && updateWarehouseDto.Address.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid description/address");
+        }
 
-        return Ok(new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate));
+        if (updateWarehouseDto.Description is not null && updateWarehouseDto.Description.All(char.IsDigit))
+        {
+            return BadRequest("You need to put valid description/address");
+        }
+        else
+        {
+            warehouse.Description = updateWarehouseDto.Description is null ? warehouse.Description : updateWarehouseDto.Description;
+            warehouse.Address = updateWarehouseDto.Address is null ? warehouse.Address : updateWarehouseDto.Address;
+
+            await _warehousesRepository.UpdateAsync(warehouse);
+
+            return Ok(new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate));
+        }
+
     }
 
     [HttpDelete("{warehouseId}", Name = "DeleteWarehouse")]
