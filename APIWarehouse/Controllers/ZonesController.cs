@@ -52,7 +52,7 @@ public class ZonesController : ControllerBase
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
         if (warehouse == null) return NotFound($"Couldn't find a warehouse with id of {warehouseId}");
 
-        if (zoneDto.Name is not null && zoneDto.Name.All(char.IsDigit))
+        if (zoneDto.Name is not null && zoneDto.Name.All(char.IsDigit) || zoneDto.Name is null)
         {
             return BadRequest("You need to put valid name");
         }

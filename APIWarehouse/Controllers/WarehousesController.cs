@@ -50,15 +50,15 @@ public class WarehousesController : ControllerBase
     public async Task<ActionResult<WarehouseDto>> Create(CreateWarehouseDto createWarehouseDto)
     {
 
-        if (createWarehouseDto.Address is not null && createWarehouseDto.Address.All(char.IsDigit))
+        if (createWarehouseDto.Address is not null && createWarehouseDto.Address.All(char.IsDigit) || createWarehouseDto.Address is null)
         {
             return BadRequest("You need to put valid name/description/address");
         }
-        if (createWarehouseDto.Name is not null && createWarehouseDto.Name.All(char.IsDigit))
+        if (createWarehouseDto.Name is not null && createWarehouseDto.Name.All(char.IsDigit) || createWarehouseDto.Name is null)
         {
             return BadRequest("You need to put valid name/description/address");
         }
-        if (createWarehouseDto.Description is not null && createWarehouseDto.Description.All(char.IsDigit))
+        if (createWarehouseDto.Description is not null && createWarehouseDto.Description.All(char.IsDigit) || createWarehouseDto.Description is null )
         {
             return BadRequest("You need to put valid name/description/address");
         }

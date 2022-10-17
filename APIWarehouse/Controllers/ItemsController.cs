@@ -66,11 +66,11 @@ namespace APIWarehouse.Controllers
                 return NotFound($"Zone {zoneId}id does not exist");
             }
 
-            if (itemDto.Name is not null && itemDto.Name.All(char.IsDigit))
+            if (itemDto.Name is not null && itemDto.Name.All(char.IsDigit) || itemDto.Name is null)
             {
                 return BadRequest("You need to put valid name/description");
             }
-            if (itemDto.Description is not null && itemDto.Description.All(char.IsDigit))
+            if (itemDto.Description is not null && itemDto.Description.All(char.IsDigit) || itemDto.Description is null)
             {
                 return BadRequest("You need to put valid name/description");
             }
