@@ -13,7 +13,7 @@ namespace APIWarehouse.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost\\MSSQLSERVER01;Database=warehouseapi;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer("Server=tcp:warehouseapi.database.windows.net,1433;Initial Catalog=warehouseapi;Persist Security Info=False;User ID=admin1;Password=Adminas1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
         }
     }
 }
