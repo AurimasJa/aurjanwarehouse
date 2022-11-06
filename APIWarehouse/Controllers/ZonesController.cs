@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Microsoft.Extensions.Hosting;
 using APIWarehouse.Data.Models;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using APIWarehouse.Auth.Model;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace APIWarehouse.Controllers;
 
@@ -12,12 +17,14 @@ namespace APIWarehouse.Controllers;
 public class ZonesController : ControllerBase
 {
     private readonly IZonesRepository _zoneRepository;
+    private readonly IAuthorizationService _authorizationService;
     private readonly IMapper _mapper;
     private readonly IWarehousesRepository _warehousesRepository;
 
-    public ZonesController(IZonesRepository zoneRepository, IMapper mapper, IWarehousesRepository warehousesRepository)
+    public ZonesController(IZonesRepository zoneRepository, IMapper mapper, IAuthorizationService authorizationService, IWarehousesRepository warehousesRepository)
     {
         _zoneRepository = zoneRepository;
+        _authorizationService = authorizationService;
         _mapper = mapper;
         _warehousesRepository = warehousesRepository;
     }
@@ -47,6 +54,7 @@ public class ZonesController : ControllerBase
         return Ok(_mapper.Map<ZoneDto>(zone));
     }
     [HttpPost]
+    [Authorize(Roles = WarehouseRoles.Admin +", " + WarehouseRoles.Manager)]
     public async Task<ActionResult<ZoneDto>> Create(int warehouseId, ZoneDto zoneDto)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -59,6 +67,8 @@ public class ZonesController : ControllerBase
         else
         {
             var zone = _mapper.Map<Zone>(zoneDto);
+            zone.UserId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+               
             zone.WarehouseId = warehouseId;
 
             await _zoneRepository.CreateAsync(zone);
@@ -68,6 +78,7 @@ public class ZonesController : ControllerBase
     }
 
     [HttpPut("{zoneId}")]
+    [Authorize(Roles = WarehouseRoles.Admin + ", " + WarehouseRoles.Manager)]
     public async Task<ActionResult<ZoneDto>> Update(int warehouseId, int zoneId, UpdateZoneDto zoneDto)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -81,6 +92,11 @@ public class ZonesController : ControllerBase
         }
         else
         {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, oldZone, PolicyNames.ResourceOwner);
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
             oldZone.Name = zoneDto.Name is null ? oldZone.Name : zoneDto.Name;
             await _zoneRepository.UpdateAsync(oldZone);
 
@@ -89,6 +105,7 @@ public class ZonesController : ControllerBase
     }
 
     [HttpDelete("{zoneId}")]
+    [Authorize(Roles = WarehouseRoles.Admin + ", " + WarehouseRoles.Manager)]
     public async Task<ActionResult> Remove(int warehouseId, int zoneId)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -96,6 +113,11 @@ public class ZonesController : ControllerBase
         var zone = await _zoneRepository.GetAsync(warehouseId, zoneId);
         if (zone == null)
             return NotFound($"Zone {zoneId}id does not exist");
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, zone, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
         await _zoneRepository.DeleteAsync(zone);
 
         // 204

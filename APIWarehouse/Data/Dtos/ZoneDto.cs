@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using APIWarehouse.Auth.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace APIWarehouse.Data.Dtos;
 

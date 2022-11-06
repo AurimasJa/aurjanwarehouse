@@ -1,9 +1,14 @@
-﻿using APIWarehouse.Data.Dtos;
+﻿using APIWarehouse.Auth;
+using APIWarehouse.Auth.Model;
+using APIWarehouse.Data.Dtos;
 using APIWarehouse.Data.Models;
 using APIWarehouse.Data.Repositories;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 namespace APIWarehouse.Controllers;
 [ApiController]
@@ -11,10 +16,12 @@ namespace APIWarehouse.Controllers;
 public class WarehousesController : ControllerBase
 {
     private readonly IWarehousesRepository _warehousesRepository;
+    private readonly IAuthorizationService _authorizationService;
     private readonly IMapper _mapper;
-    public WarehousesController(IWarehousesRepository warehousesRepository, IMapper mapper)
+    public WarehousesController(IWarehousesRepository warehousesRepository, IAuthorizationService authorizationService, IMapper mapper)
     {
         _warehousesRepository = warehousesRepository;
+        _authorizationService = authorizationService;
         _mapper = mapper;
     }
 
@@ -35,7 +42,12 @@ public class WarehousesController : ControllerBase
 
 
         // var warehouse1 = new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate);
-        return new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate);
+        return new Warehouse{
+            Id = warehouse.Id,
+            Name = warehouse.Name,
+            Description = warehouse.Description,
+            Address = warehouse.Address,
+            CreationDate = warehouse.CreationDate};
 
     }
     
@@ -47,7 +59,8 @@ public class WarehousesController : ControllerBase
         return items.Select(x => _mapper.Map<ItemDto>(x));
     }
     [HttpPost]
-    public async Task<ActionResult<WarehouseDto>> Create(CreateWarehouseDto createWarehouseDto)
+    [Authorize(Roles = WarehouseRoles.Admin)]
+    public async Task<ActionResult<Warehouse>> Create(CreateWarehouseDto createWarehouseDto)
     {
 
         if (createWarehouseDto.Address is not null && createWarehouseDto.Address.All(char.IsDigit) || createWarehouseDto.Address is null)
@@ -65,7 +78,14 @@ public class WarehousesController : ControllerBase
         else
         {
             var war = new Warehouse
-            { Name = createWarehouseDto.Name, Description = createWarehouseDto.Description, Address = createWarehouseDto.Address, CreationDate = DateTime.UtcNow };
+            {
+                Name = createWarehouseDto.Name,
+                Description = createWarehouseDto.Description,
+                Address = createWarehouseDto.Address,
+                CreationDate = DateTime.UtcNow,
+                UserId = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+
+            };
 
             await _warehousesRepository.CreateAsync(war);
 
@@ -81,11 +101,8 @@ public class WarehousesController : ControllerBase
 
     // api/topics
     [HttpPut]
+    [Authorize(Roles = WarehouseRoles.Admin)]
     [Route("{warehouseId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<WarehouseDto>> Update(int warehouseId, UpdateWarehouseDto updateWarehouseDto)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -105,17 +122,31 @@ public class WarehousesController : ControllerBase
         }
         else
         {
+
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouse, PolicyNames.ResourceOwner);
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
             warehouse.Description = updateWarehouseDto.Description is null ? warehouse.Description : updateWarehouseDto.Description;
             warehouse.Address = updateWarehouseDto.Address is null ? warehouse.Address : updateWarehouseDto.Address;
 
             await _warehousesRepository.UpdateAsync(warehouse);
 
-            return Ok(new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate));
+            return Ok(new Warehouse
+            {
+                Id = warehouse.Id,
+                Name = warehouse.Name,
+                Description = warehouse.Description,
+                Address = warehouse.Address,
+                CreationDate = warehouse.CreationDate
+            });
         }
 
     }
 
     [HttpDelete("{warehouseId}", Name = "DeleteWarehouse")]
+    [Authorize(Roles = WarehouseRoles.Admin)]
     public async Task<ActionResult> Remove(int warehouseId)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -123,7 +154,11 @@ public class WarehousesController : ControllerBase
         // 404
         if (warehouse == null)
             return NotFound($"Couldn't find a warehouse with id of {warehouseId}"); ;
-
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouse, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
         await _warehousesRepository.DeleteAsync(warehouse);
 
 

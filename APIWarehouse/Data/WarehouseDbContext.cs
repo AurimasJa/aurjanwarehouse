@@ -1,9 +1,11 @@
-﻿using APIWarehouse.Data.Models;
+﻿using APIWarehouse.Auth.Model;
+using APIWarehouse.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace APIWarehouse.Data
 {
-    public class WarehouseDbContext : DbContext
+    public class WarehouseDbContext : IdentityDbContext<WarehouseRestUser>
     {
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Zone> Zones { get; set; }
