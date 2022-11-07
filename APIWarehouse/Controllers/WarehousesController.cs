@@ -26,12 +26,19 @@ public class WarehousesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager)]
     public async Task<IEnumerable<WarehouseDto>> GetMany()
     {
-        var warehouses = await _warehousesRepository.GetManyAsync();
+        var warehouses = await _warehousesRepository.GetManyAsync(); 
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouses, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return (IEnumerable<WarehouseDto>)Forbid();
+        }
         return warehouses.Select(x => new WarehouseDto(x.Id, x.Name, x.Description, x.Address, x.CreationDate));
     }
     [HttpGet("{warehouseId}", Name = "GetWarehouse")]
+    [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager)]
     public async Task<ActionResult<Warehouse>> Get(int warehouseId)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -39,7 +46,11 @@ public class WarehousesController : ControllerBase
         // 404
         if (warehouse == null)
             return NotFound($"Couldn't find a warehouse with id of {warehouseId}"); ;
-
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouse, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
 
         // var warehouse1 = new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate);
         return new Warehouse{
@@ -53,9 +64,11 @@ public class WarehousesController : ControllerBase
     
     [HttpGet]
     [Route("{warehouseId}/AllItems")]
+    [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager)]
     public async Task<IEnumerable<ItemDto>> GetAll(int warehouseId)
     {
-        var items = await _warehousesRepository.GetManyAsyncItemsFromWarehouse(warehouseId);
+        var items = await _warehousesRepository.GetManyAsyncItemsFromWarehouse(warehouseId); 
+
         return items.Select(x => _mapper.Map<ItemDto>(x));
     }
     [HttpPost]

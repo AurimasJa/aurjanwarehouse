@@ -33,6 +33,7 @@ namespace APIWarehouse.Controllers
 
         [HttpGet]
         [Route("{itemId}")]
+        [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager + "," + WarehouseRoles.Worker)]
         public async Task<ActionResult<ZoneDto>> GetOne(int warehouseId, int zoneId, int itemId)
         {
             var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -53,6 +54,7 @@ namespace APIWarehouse.Controllers
             return Ok(_mapper.Map<ItemDto>(item));
         }
         [HttpGet]
+        [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager + "," + WarehouseRoles.Worker)]
         public async Task<IEnumerable<ItemDto>> GetAllAsync(int warehouseId, int zoneId)
         {
             var items = await _itemsRepository.GetManyAsync(warehouseId, zoneId);

@@ -30,14 +30,21 @@ public class ZonesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager + "," + WarehouseRoles.Worker)]
     public async Task<IEnumerable<ZoneDto>> GetAllAsync(int warehouseId)
     {
-        var zones = await _zoneRepository.GetManyAsync(warehouseId);
+        var zones = await _zoneRepository.GetManyAsync(warehouseId); 
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, zones, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return (IEnumerable<ZoneDto>)Forbid();
+        }
         return zones.Select(x => _mapper.Map<ZoneDto>(x));
     }
 
     [HttpGet]
     [Route("{zoneId}")]
+    [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager + "," + WarehouseRoles.Worker)]
     public async Task<ActionResult<ZoneDto>> GetOne(int warehouseId, int zoneId)
     {
         var warehouse = await _warehousesRepository.GetAsync(warehouseId);
@@ -50,7 +57,11 @@ public class ZonesController : ControllerBase
         {
             return NotFound($"Zone {zoneId}id does not exist");
         }
-
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouse, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
         return Ok(_mapper.Map<ZoneDto>(zone));
     }
     [HttpPost]
