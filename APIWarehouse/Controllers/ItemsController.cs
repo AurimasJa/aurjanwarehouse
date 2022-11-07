@@ -51,6 +51,11 @@ namespace APIWarehouse.Controllers
             {
                 return NotFound($"Item {itemId}id does not exist");
             }
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, item, PolicyNames.ResourceOwner);
+            if (!authorizationResult.Succeeded)
+            {
+                return Forbid();
+            }
             return Ok(_mapper.Map<ItemDto>(item));
         }
         [HttpGet]
@@ -58,6 +63,11 @@ namespace APIWarehouse.Controllers
         public async Task<IEnumerable<ItemDto>> GetAllAsync(int warehouseId, int zoneId)
         {
             var items = await _itemsRepository.GetManyAsync(warehouseId, zoneId);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, items, PolicyNames.ResourceOwner);
+            if (!authorizationResult.Succeeded)
+            {
+                return null;
+            }
             return items.Select(x => _mapper.Map<ItemDto>(x));
         }
 

@@ -33,7 +33,7 @@ public class WarehousesController : ControllerBase
         var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouses, PolicyNames.ResourceOwner);
         if (!authorizationResult.Succeeded)
         {
-            return (IEnumerable<WarehouseDto>)Forbid();
+            return null;
         }
         return warehouses.Select(x => new WarehouseDto(x.Id, x.Name, x.Description, x.Address, x.CreationDate));
     }
