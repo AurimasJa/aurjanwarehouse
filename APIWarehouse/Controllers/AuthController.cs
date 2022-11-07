@@ -1,5 +1,6 @@
 ﻿using APIWarehouse.Auth;
 using APIWarehouse.Auth.Model;
+using APIWarehouse.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,11 @@ public class AuthController : ControllerBase
         var createUserResult = await _userManager.CreateAsync(newUser, registerUserDto.Password);
         if (!createUserResult.Succeeded)
             return BadRequest("Could not create a user." + $"{createUserResult}");
-
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, item, PolicyNames.ResourceOwner);
+        if (!authorizationResult.Succeeded)
+        {
+            return Forbid();
+        }
         await _userManager.AddToRoleAsync(newUser, WarehouseRoles.Manager);
 
         return CreatedAtAction(nameof(Register), new UserDto(newUser.Id, newUser.UserName, newUser.Email));
