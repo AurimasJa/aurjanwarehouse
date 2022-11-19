@@ -53,12 +53,14 @@ public class WarehousesController : ControllerBase
         }
 
         // var warehouse1 = new Warehouse(warehouse.Id, warehouse.Name, warehouse.Description, warehouse.Address, warehouse.CreationDate);
-        return new Warehouse{
+        return new Warehouse
+        {
             Id = warehouse.Id,
             Name = warehouse.Name,
             Description = warehouse.Description,
             Address = warehouse.Address,
-            CreationDate = warehouse.CreationDate};
+            CreationDate = warehouse.CreationDate
+        };
 
     }
     

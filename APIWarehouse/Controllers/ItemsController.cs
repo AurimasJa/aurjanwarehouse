@@ -30,7 +30,7 @@ namespace APIWarehouse.Controllers
             _authorizationService = authorizationService;
             _itemsRepository = itemsRepository;
         }
-
+        //itemDTO???
         [HttpGet]
         [Route("{itemId}")]
         [Authorize(Roles = WarehouseRoles.Admin + "," + WarehouseRoles.Manager + "," + WarehouseRoles.Worker)]
