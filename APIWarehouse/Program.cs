@@ -13,7 +13,19 @@ using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                              "http://www.contoso.com")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();  // add the allowed origins
+                      });
+});
 builder.Services.AddControllers();
 builder.Services.AddIdentity<WarehouseRestUser, IdentityRole>()
     .AddEntityFrameworkStores<WarehouseDbContext>()
@@ -59,6 +71,7 @@ var app = builder.Build();
 app.UseRouting();
 app.MapControllers();
 app.UseAuthentication();
+app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();
 
 var dbSeeder = app.Services.CreateScope().ServiceProvider.GetRequiredService<AuthDbSeeder>();

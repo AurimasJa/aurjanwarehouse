@@ -34,11 +34,11 @@ public class ZonesController : ControllerBase
     public async Task<IEnumerable<ZoneDto>> GetAllAsync(int warehouseId)
     {
         var zones = await _zoneRepository.GetManyAsync(warehouseId); 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(User, zones, PolicyNames.ResourceOwner);
-        if (!authorizationResult.Succeeded)
-        {
-            return (IEnumerable<ZoneDto>)Forbid();
-        }
+        //var authorizationResult = await _authorizationService.AuthorizeAsync(User, zones, PolicyNames.ResourceOwner);
+        //if (!authorizationResult.Succeeded)
+        //{
+        //    return (IEnumerable<ZoneDto>)Forbid();
+        //}
         return zones.Select(x => _mapper.Map<ZoneDto>(x));
     }
 
@@ -57,11 +57,11 @@ public class ZonesController : ControllerBase
         {
             return NotFound($"Zone {zoneId}id does not exist");
         }
-        var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouse, PolicyNames.ResourceOwner);
-        if (!authorizationResult.Succeeded)
-        {
-            return Forbid();
-        }
+        //var authorizationResult = await _authorizationService.AuthorizeAsync(User, warehouse, PolicyNames.ResourceOwner);
+        //if (!authorizationResult.Succeeded)
+        //{
+        //    return Forbid();
+        //}
         return Ok(_mapper.Map<ZoneDto>(zone));
     }
     [HttpPost]
