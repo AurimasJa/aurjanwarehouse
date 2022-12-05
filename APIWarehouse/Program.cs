@@ -20,7 +20,8 @@ builder.Services.AddCors(options =>
                       policy =>
                       {
                           policy.WithOrigins("http://localhost:3000",
-                                              "http://www.contoso.com")
+                                              "https://myapiwarehouse.azurewebsites.net/",
+                                              "https://myapiwarehouse.azurewebsites.net")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();  // add the allowed origins
