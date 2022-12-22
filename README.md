@@ -330,3 +330,8 @@ Manager registracija:
 | Atsakymo kodas   | 200 - OK     | 
 | Atsakymo struktūra   |   { "id": int, "name": string, "description": string }| 
 | Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
+
+
+# Išvados
+
+
