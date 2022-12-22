@@ -58,11 +58,11 @@ UML deployment diagrama: Vėliau…
 
 | API-Metodas | Login(Post) | 
 | :---:         |     :---:      |
-| Paskirtis  | git status     | 
-| ENDPOINT   | git status     | 
-| Užklausos struktūra   | git status     | 
-| Užklausos header   | git status     | 
-| Kuri rolė atlieka   | git status     | 
-| Atsakymo kodas   | git status     | 
-| Atsakymo struktūra   | git status     | 
-| Kiti galimi atsakymai   | git status     | 
+| Paskirtis  | Prisijungti prie sistemos     | 
+| ENDPOINT   | api/login   | 
+| Užklausos struktūra   | { "userName": "admin", "password": "VerySafePassword1!" }    | 
+| Užklausos header   |   -   | 
+| Kuri rolė atlieka   | -     | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   | { "id": "e716baf7-4ee0-4ae5-8f2d-fd36a0a70437", "userName": "admin", "roles": [ "Manager", "Worker", "Admin" ], "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJqdGkiOiJkNTZhYmQxYi0zNDQzLTQ2NzMtYmE5ZC0wZDAzNzc4NTRlZjEiLCJzdWIiOiJlNzE2YmFmNy00ZWUwLTRhZTUtOGYyZC1mZDM2YTBhNzA0MzciLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiTWFuYWdlciIsIldvcmtlciIsIkFkbWluIl0sImV4cCI6MTY3MTcwOTM2MiwiaXNzIjoiQXVyaW1hcyIsImF1ZCI6IlRydXN0ZWRDbGllbnQifQ.ZRVS38BGByIHag7BxddkE47Zfbtvph3gdAOTH7lG6xM" }     | 
+| Kiti galimi atsakymai   | 400 - BadRequest   | 
