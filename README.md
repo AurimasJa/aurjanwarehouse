@@ -55,14 +55,210 @@ Duomenų bazė: MySQL
 
 UML deployment diagrama: Vėliau…
 
+# Rgistracija, prisijungimas
 
 | API-Metodas | Login(Post) | 
 | :---:         |     :---:      |
 | Paskirtis  | Prisijungti prie sistemos     | 
 | ENDPOINT   | api/login   | 
-| Užklausos struktūra   | { "userName": "admin", "password": "VerySafePassword1!" }    | 
+| Užklausos struktūra   | { "userName": string, "password": string }    | 
 | Užklausos header   |   -   | 
 | Kuri rolė atlieka   | -     | 
 | Atsakymo kodas   | 200 - OK     | 
-| Atsakymo struktūra   | { "id": "e716baf7-4ee0-4ae5-8f2d-fd36a0a70437", "userName": "admin", "roles": [ "Manager", "Worker", "Admin" ], "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJqdGkiOiJkNTZhYmQxYi0zNDQzLTQ2NzMtYmE5ZC0wZDAzNzc4NTRlZjEiLCJzdWIiOiJlNzE2YmFmNy00ZWUwLTRhZTUtOGYyZC1mZDM2YTBhNzA0MzciLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOlsiTWFuYWdlciIsIldvcmtlciIsIkFkbWluIl0sImV4cCI6MTY3MTcwOTM2MiwiaXNzIjoiQXVyaW1hcyIsImF1ZCI6IlRydXN0ZWRDbGllbnQifQ.ZRVS38BGByIHag7BxddkE47Zfbtvph3gdAOTH7lG6xM" }     | 
+| Atsakymo struktūra   |   { "id": string, "userName": string, "roles": string[], "accessToken": string }  | 
 | Kiti galimi atsakymai   | 400 - BadRequest   | 
+
+
+| API-Metodas | Register(Post) | 
+| :---:         |     :---:      |
+| Paskirtis  | Registruotis(worker) prie sistemos     | 
+| ENDPOINT   | api/register   | 
+| Užklausos struktūra   | { "userName": string, "email": string, "password": string }    | 
+| Užklausos header   |   -   | 
+| Kuri rolė atlieka   | -     | 
+| Atsakymo kodas   | 201 - Created     | 
+| Atsakymo struktūra   |   { "id": string, "userName": string, "email": string }  | 
+| Kiti galimi atsakymai   | 400 - BadRequest   | 
+----------------------------------------------------------------
+| API-Metodas | Register Manager(Post) | 
+| :---:         |     :---:      |
+| Paskirtis  | Registruoti(manager) prie sistemos     | 
+| ENDPOINT   | api/register   | 
+| Užklausos struktūra   | { "userName": string, "email": string, "password": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin    | 
+| Atsakymo kodas   | 201 - Created     | 
+| Atsakymo struktūra   |   { "id": string, "userName": string, "email": string }  | 
+| Kiti galimi atsakymai   | 400 - BadRequest   | 
+
+# Sandėliai
+
+| API-Metodas | Create(Post) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Sukurti sandėlį     | 
+| ENDPOINT   | api/warehouses   | 
+| Užklausos struktūra   | { "Name": string, "Description": string, "Address": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin    | 
+| Atsakymo kodas   | 201 - Created     | 
+| Atsakymo struktūra   |   { "id": "string", "userName": "string", "email": "string" }  | 
+| Kiti galimi atsakymai   | 400 - BadRequest, 401 - unauthorized, 403 - forbidden  | 
+----------------------------------------------------------------
+| API-Metodas | Delete(Delete) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Redaguoti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | - | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin   | 
+| Atsakymo kodas   | 204 - No Content    | 
+| Atsakymo struktūra   |   No Content| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found  | 
+----------------------------------------------------------------
+| API-Metodas | Get(Get) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Gauti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | -    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin/Manager/Worker    | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   { "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null }  | 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found  | 
+----------------------------------------------------------------
+| API-Metodas | Get(Get) Warehouses | 
+| :---:         |     :---:      |
+| Paskirtis  | Gauti visus sandėlius     | 
+| ENDPOINT   | api/warehouses   | 
+| Užklausos struktūra   | -    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin/Manager/Worker    | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   ({ "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null })LIST| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
+----------------------------------------------------------------
+| API-Metodas | Update(Put) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Redaguoti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | { "name": string, "description": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin   | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   ({ "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null })LIST| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
+
+# Zonos
+
+| API-Metodas | Create(Post) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Sukurti sandėlį     | 
+| ENDPOINT   | api/warehouses   | 
+| Užklausos struktūra   | { "Name": string, "Description": string, "Address": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin    | 
+| Atsakymo kodas   | 201 - Created     | 
+| Atsakymo struktūra   |   { "id": "string", "userName": "string", "email": "string" }  | 
+| Kiti galimi atsakymai   | 400 - BadRequest, 401 - unauthorized, 403 - forbidden  | 
+----------------------------------------------------------------
+| API-Metodas | Delete(Delete) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Redaguoti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | - | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin   | 
+| Atsakymo kodas   | 204 - No Content    | 
+| Atsakymo struktūra   |   No Content| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found  | 
+----------------------------------------------------------------
+| API-Metodas | Get(Get) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Gauti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | -    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin/Manager/Worker    | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   { "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null }  | 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found  | 
+----------------------------------------------------------------
+| API-Metodas | Get(Get) Warehouses | 
+| :---:         |     :---:      |
+| Paskirtis  | Gauti visus sandėlius     | 
+| ENDPOINT   | api/warehouses   | 
+| Užklausos struktūra   | -    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin/Manager/Worker    | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   ({ "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null })LIST| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
+----------------------------------------------------------------
+| API-Metodas | Update(Put) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Redaguoti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | { "name": string, "description": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin   | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   ({ "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null })LIST| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
+
+
+# Daiktai
+
+| API-Metodas | Create(Post) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Sukurti sandėlį     | 
+| ENDPOINT   | api/warehouses   | 
+| Užklausos struktūra   | { "Name": string, "Description": string, "Address": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin    | 
+| Atsakymo kodas   | 201 - Created     | 
+| Atsakymo struktūra   |   { "id": "string", "userName": "string", "email": "string" }  | 
+| Kiti galimi atsakymai   | 400 - BadRequest, 401 - unauthorized, 403 - forbidden  | 
+----------------------------------------------------------------
+| API-Metodas | Delete(Delete) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Redaguoti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | - | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin   | 
+| Atsakymo kodas   | 204 - No Content    | 
+| Atsakymo struktūra   |   No Content| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found  | 
+----------------------------------------------------------------
+| API-Metodas | Get(Get) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Gauti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | -    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin/Manager/Worker    | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   { "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null }  | 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found  | 
+----------------------------------------------------------------
+| API-Metodas | Get(Get) Warehouses | 
+| :---:         |     :---:      |
+| Paskirtis  | Gauti visus sandėlius     | 
+| ENDPOINT   | api/warehouses   | 
+| Užklausos struktūra   | -    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin/Manager/Worker    | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   ({ "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null })LIST| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
+----------------------------------------------------------------
+| API-Metodas | Update(Put) Warehouse | 
+| :---:         |     :---:      |
+| Paskirtis  | Redaguoti 1 sandėlį     | 
+| ENDPOINT   | api/warehouses/{warehouseId}   | 
+| Užklausos struktūra   | { "name": string, "description": string }    | 
+| Užklausos header   |   Authorization: Bearer {token}   | 
+| Kuri rolė atlieka   |  Admin   | 
+| Atsakymo kodas   | 200 - OK     | 
+| Atsakymo struktūra   |   ({ "id":  int , "name": string, "description":string, "address": string, "creationDate": DateTime.Now , "userId": null, "user": null })LIST| 
+| Kiti galimi atsakymai   |  401 - unauthorized, 403 - forbidden, 404 - Not Found, 204 - No Content  | 
