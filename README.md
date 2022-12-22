@@ -5,7 +5,7 @@ Projekto tikslas – Sistema kuri padėtų lengviau skirstyti prekes sandėliuos
 
 Veikimo principas – galimybė sandėliuoti prekes, rasti jų būvimo vietą sandėlyje. Sandėlis turi zonas, kuriose prekės yra laikomos.
 
-Administratorius galės registruoti sandėlius bei vadovų paskyras. Vadovam leis pridėti darbuotojus į jų valdomą sandėlį. Vadovas galės pridėti sandėlyje zonas, kuriose bus laikomos prekės, peržiūrėti darbuotojus ir juos registruoti. Darbuotojai gali peržiūrėti zonoje esančių prekių sąrašą, perkelti prekes į kitą zoną esančia sandėlyje.
+Administratorius galės registruoti sandėlius bei vadovų paskyras. Vadovas galės pridėti sandėlyje zonas, kuriose bus laikomos prekės, prekes į pagrindinę zoną. Darbuotojai gali peržiūrėti zonoje esančių prekių sąrašą, perkelti prekes į kitą zoną esančia sandėlyje.
 
 # Funkciniai reikalavimai
 
@@ -20,7 +20,7 @@ Darbuotojas:
 
 •	Skirstyti prekes sandėlio zonose
 
-•	Peržiūrėti zonoje esančių prekių sąrašą
+•	Peržiūrėti sandėlius, zonas, prekes
 
 •	Atsijungti
 
@@ -29,24 +29,22 @@ Vadovas
 
 •	Pridėti sandėlio zonas
 
-•	Peržiūrėti darbuotojus
+•	Peržiūrėti sandėlius, zonas, prekes
 
 •	Pridėti prekes į pagrindinę zoną
-
-•	Registruoti darbuotojus į savo sandėlį
 
 •	Atsijungti
 
 
 Administratorius:
 
-•	Gali pridėti/redaguoti/šalinti sandėlį
+•	Peržiūrėti sandėlius, zonas, prekes
+
+•	Gali pridėti/redaguoti/šalinti sandėlį/zonas/prekes
 
 •	Peržiūrėti sandėlio informaciją
 
 •	Registruoti sandėlio vadovą
-
-•	Priskirti vadovą sandėliui
 
 
 # Sistemos sudedamosios dalys:
@@ -57,3 +55,14 @@ Duomenų bazė: MySQL
 
 UML deployment diagrama: Vėliau…
 
+
+| API-Metodas | Login(Post) | 
+| :---:         |     :---:      |
+| Paskirtis  | git status     | 
+| ENDPOINT   | git status     | 
+| Užklausos struktūra   | git status     | 
+| Užklausos header   | git status     | 
+| Kuri rolė atlieka   | git status     | 
+| Atsakymo kodas   | git status     | 
+| Atsakymo struktūra   | git status     | 
+| Kiti galimi atsakymai   | git status     | 
