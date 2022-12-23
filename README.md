@@ -334,4 +334,4 @@ Manager registracija:
 
 # Išvados
 
-
+Nors sistema ir veikia, bet ji yra tik pradiniame taške, tačiau jei norėčiau ją toliau plėsti, būtų galima pridėti daugiau funkcionalumo kaip darbuotojų sąrašus, atskirus sandėlius tam tikriem asmenim, privačius sandėlius, įdėti valiutą į sistemą, pirkimus.
